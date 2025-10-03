@@ -1,9 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  
-});
+export interface IUser extends Document {
+  username: string;
+  email: string;
+  password: string;
+  status: 'active' | 'inactive';
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default mongoose.model('User', userSchema);
+const UserSchema: Schema = new Schema(
+  {
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true },
+    status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  },
+  { timestamps: true } // createdAt & updatedAt auto generate
+);
+
+export default mongoose.model<IUser>('User', UserSchema);
